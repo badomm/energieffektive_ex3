@@ -54,11 +54,13 @@ static int send_signal(void){
 	signal_info.si_signo = SIGIO;
 	signal_info.si_code = SI_QUEUE;
 	signal_info.si_int = 1234;
-
+	printk("Actual sending\n");
 	//Do the actuall sending of signal
-	if(pid_type == 0)
+	if(pid_type == 0){
 		printk("Sending signal: no PID\n");
 		return -1;
+	}
+	printk("PID exist\n");
 	if(send_sig_info(SIGIO, &signal_info, pid_type) < 0){
 		printk("Sending signal failed\n");
 		return -1;
@@ -120,13 +122,12 @@ static int gamepad_open(struct inode *i, struct file *f)
 		rcu_read_unlock();
 		return -1;
 	}
+	rcu_read_unlock();
 	if(setup_hardware_access_and_interrupt() != 0){
 		printk("Gamepad: hardware access failed\n");
 		return -1;		
 	}
-	rcu_read_unlock();
-
-	//setup hardware access:
+	
 
 	return 0;
 }

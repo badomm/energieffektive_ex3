@@ -28,15 +28,15 @@ int main(void){
 		return 0;
 	}
 	printf("file is open \n");
-	signal(SIGIO, &gamepad_handler);	
+
 	while(1)
 	{
-		
+		signal(SIGIO, &gamepad_handler);	
 		query_gamepad_t q = {.led = 0, .buttons = 0};
 
 		//if(ioctl(fd, WRITE2GAMEPAD, &q)==-1)
 			//printf("error\n");
-		sleep(1000);
+		//sleep(1000);
 		//printf("Staying alive\n");
 	}
 	close(fd);
