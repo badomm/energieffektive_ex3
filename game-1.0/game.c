@@ -1,9 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 
-int main(int argc, char *argv[])
-{
-	printf("Hello World, I'm game!\n");
+#include "query_ioctl.h"
+static i = 0;
+void gamepad_handler(int signum){
+	printf("signum: %d\n",signum);
+	i++;
+	printf("Got Signal%d\n",i);
+	signal(SIGIO, &gamepad_handler);
+}
 
-	exit(EXIT_SUCCESS);
+int main(void){
+	char *filename = "/dev/gamepad_device";
+	int fd = 0;
+	printf("starting game!!!!!!\n");
+	fflush(stdout);
+	fd = open(filename,O_RDWR);
+	printf("Trying to open file: %d\n",fd);
+	fflush(stdout);
+	if(fd <= 0){
+		printf("trying to open failed: %d",fd);
+		fflush(stdout);	
+		return 0;
+	}
+	printf("file is open \n");
+	signal(SIGIO, &gamepad_handler);	
+	while(1)
+	{
+		
+		query_gamepad_t q = {.led = 0, .buttons = 0};
+
+		//if(ioctl(fd, WRITE2GAMEPAD, &q)==-1)
+			//printf("error\n");
+		sleep(1000);
+		//printf("Staying alive\n");
+	}
+	close(fd);
 }
