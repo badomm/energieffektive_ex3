@@ -24,7 +24,6 @@
 
 #include <linux/ioctl.h>
 #include <linux/interrupt.h>
-#include "query_ioctl.h"
 #include "efm32gg.h"
 
 
@@ -153,56 +152,11 @@ static ssize_t my_read(struct file *f, char __user *buf, size_t len, loff_t *off
   return len;
 }
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35))
-static int gamepad_ioctl(struct inode *i, struct file *f, unsigned int cmd, unsigned long arg)
-#else
-static long gamepad_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
-#endif
-{
-	query_gamepad_t gamepad_data;
-	printk("Gamepad ioctl\n;");
-
-	switch (cmd)
-	{
-		break;
-		case READ_GAMEPAD:
-		{
-			gamepad_data.led = gamepad_led_status;
-			gamepad_data.buttons = gamepad_button_status;
-			if(copy_to_user((query_gamepad_t*)arg, &gamepad_data, sizeof(query_gamepad_t)))
-			{
-				return -EACCES;
-			}
-		}
-
-		break;
-		case WRITE2GAMEPAD:
-		{
-			printk(KERN_INFO "Gamepad ioctl write\n;");
-			if(copy_from_user(&gamepad_data, (query_gamepad_t*)arg,sizeof(query_gamepad_t))){
-				return -EACCES;
-			}
-			printk(KERN_INFO "Gamepad ioctl write, success\n;");
-			gamepad_led_status = gamepad_data.led;
-			gamepad_button_status = gamepad_data.buttons;
-		}
-		break;
-	}
-	printk(KERN_INFO "Exit ioctl\n;");
-	return 0;
-}
-
-
 static struct file_operations gamepad_fileOps = 
 {
 	.owner = THIS_MODULE,
 	.open = gamepad_open,
 	.release = gamepad_release,
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35))
-    .ioctl = gamepad_ioctl,
-	#else
-    .unlocked_ioctl = gamepad_ioctl,
-	#endif
 	 .read = my_read,
 	 .write = my_write
 };
