@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-static i = 0;
+#include "screen.h"
+
+static int i = 0;
 void gamepad_handler(int signum){
 	printf("signum: %d\n",signum);
 	i++;
@@ -17,6 +19,9 @@ int main(void){
 	char *filename = "/dev/gamepad_device";
 	int fd = 0;
 	printf("starting game!!!!!!\n");
+
+	screen_tests();
+
 	fflush(stdout);
 	fd = open(filename,O_RDWR);
 	printf("Trying to open file: %d\n",fd);
