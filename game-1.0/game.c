@@ -30,7 +30,7 @@ int main(void){
 
 	while(1)
 	{
-		signal(SIGIO, &gamepad_handler);	
+		signal(SIGIO, &gamepad_handler);
 
 		//if(ioctl(fd, WRITE2GAMEPAD, &q)==-1)
 			//printf("error\n");
