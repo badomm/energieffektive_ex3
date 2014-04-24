@@ -13,6 +13,8 @@ LDFLAGS +=
 
 all: game
 
+game: screen.o
+
 clean:
 	-rm -f game
 
