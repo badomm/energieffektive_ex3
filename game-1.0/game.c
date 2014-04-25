@@ -14,7 +14,7 @@ void gamepad_handler(int signum){
 	signal(SIGIO, &gamepad_handler);
 }
 
-int main(void){
+int test_gamepad(void){
 	char *filename = "/dev/gamepad_device";
 	int fd = 0;
 	printf("starting game!!!!!!\n");
