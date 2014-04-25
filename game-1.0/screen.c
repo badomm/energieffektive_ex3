@@ -53,8 +53,8 @@ void print_grid(PlayGrid grid) {
 }
 
 short sokoban_color(PlayGrid grid, int pixel_i, int pixel_j) {
-	int x_tile_width = 240 / grid.y;
-	int y_tile_width = 320 / grid.x;
+	int x_tile_width = 240 / grid.y; // TODO x og y er stygt
+	int y_tile_width = 320 / grid.x; // TODO samme
 
 	int x = pixel_i / x_tile_width;
 	int y = pixel_j / y_tile_width;
