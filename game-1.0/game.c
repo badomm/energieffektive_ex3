@@ -6,7 +6,10 @@
 #include <sys/ioctl.h>
 
 #include "query_ioctl.h"
-static i = 0;
+#include "screen.h"
+
+static int i = 0;
+
 void gamepad_handler(int signum){
 	printf("signum: %d\n",signum);
 	i++;
@@ -18,6 +21,9 @@ int test_gamepad(void){
 	char *filename = "/dev/gamepad_device";
 	int fd = 0;
 	printf("starting game!!!!!!\n");
+
+	screen_tests();
+
 	fflush(stdout);
 	fd = open(filename,O_RDWR);
 	printf("Trying to open file: %d\n",fd);
@@ -31,7 +37,7 @@ int test_gamepad(void){
 
 	while(1)
 	{
-		signal(SIGIO, &gamepad_handler);	
+		signal(SIGIO, &gamepad_handler);
 		query_gamepad_t q = {.led = 0, .buttons = 0};
 
 		//if(ioctl(fd, WRITE2GAMEPAD, &q)==-1)
