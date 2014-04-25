@@ -29,7 +29,7 @@
 #define IRQ_N_GPIO_EVEN 17
 #define IRQ_N_GPIO_ODD  18
 #define IRQ_NAME_GPIO_EVEN "gamepad_IRQ_gpio_even"
-#define IRQ_NAME_GPIO_ODD  "gamaeoad_IRQ_gpio_odd"
+#define IRQ_NAME_GPIO_ODD  "gamepad_IRQ_gpio_odd"
 
 #define GPIO_MEM_REGION_LENGTH 0x11c
 #define CMU_MEM_REGION_LENGTH 0x44
