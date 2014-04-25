@@ -22,7 +22,6 @@
 #include <asm/uaccess.h>
 #include <linux/slab.h>
 
-#include <linux/ioctl.h>
 #include <linux/interrupt.h>
 #include "query_ioctl.h"
 #include "efm32gg.h"
@@ -196,10 +195,7 @@ static int __init gamepad_init(void)
 	*GPIO_EXTIRISE = 0xff;
 	*GPIO_IEN = 0xff;
 
-	/*if(setup_hardware_access_and_interrupt() != 0){
-		printk("Gamepad: hardware access failed\n");
-		return -1;		
-	}*/
+
 	printk("Gamepad: interrupts up and running\n");
 
 	kfree(pid_type);
