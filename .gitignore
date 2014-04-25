@@ -2,3 +2,4 @@ platform/logfile
 *~
 game-1.0/game.gdb
 game-1.0/game
+*.o
