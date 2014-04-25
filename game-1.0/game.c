@@ -7,9 +7,9 @@
 
 #include "query_ioctl.h"
 #include "screen.h"
-static i = 0;
 
 static int i = 0;
+
 void gamepad_handler(int signum){
 	printf("signum: %d\n",signum);
 	i++;
