@@ -13,7 +13,7 @@ LDFLAGS +=
 
 all: game
 
-game: screen.o
+game: screen.o playgrid.o sokoban.o
 
 clean:
 	-rm -f game

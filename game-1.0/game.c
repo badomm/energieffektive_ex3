@@ -7,6 +7,7 @@
 
 #include "query_ioctl.h"
 #include "screen.h"
+#include "sokoban.h"
 
 static int i = 0;
 
@@ -15,6 +16,12 @@ void gamepad_handler(int signum){
 	i++;
 	printf("Got Signal%d\n",i);
 	signal(SIGIO, &gamepad_handler);
+}
+
+int main(void) {
+	printf("Gaming time!\n");
+	game_tests();
+	return 0;
 }
 
 int test_gamepad(void){

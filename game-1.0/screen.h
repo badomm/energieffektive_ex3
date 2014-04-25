@@ -6,11 +6,13 @@
 #include <sys/ioctl.h>
 
 #include <linux/fb.h>
-
 #include <sys/mman.h>
+
+#include "playgrid.h"
 #define SCREENSIZE (320*240)
 
 void screen_tests();
+void print_playgrid(PlayGrid grid);
 
 #endif
 
