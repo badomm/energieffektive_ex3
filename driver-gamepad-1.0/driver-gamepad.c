@@ -43,8 +43,7 @@ static struct class *device_class; 	//Global variable for the device class
 static struct task_struct *pid_type  = 0;
 
 
-static int gamepad_led_status = 0;
-static int gamepad_button_status = 0;
+static char gamepad_button_status = 0;
 
 static int send_signal(void){
 	struct siginfo signal_info;
@@ -65,15 +64,15 @@ static int send_signal(void){
 		printk("Sending signal failed\n");
 		return -1;
 	}
-	printk("Gamepad: signal sent \n");
+	printk("Gamepad: signal sent! \n");
 	return 0;
 }
 
 static irq_handler_t  gamepad_interrupt_handler(int irq, void *dumme, struct pt_regs *regs){
-	printk("Gamepad_ intterrupt handler: Received Interrupt\n");	
-	gamepad_button_status = *GPIO_PC_DIN;
+	printk("Gamepad_ intterrupt handler: Received Interrupt  %d \n",*GPIO_PC_DIN);	
+	gamepad_button_status = (char)*GPIO_PC_DIN;
 	send_signal();
-	*GPIO_IFC = 0xff; //clear interrupt
+	*GPIO_IFC = 0xff; //clear intermrupt
 	printk("Gamepad_ intterrupt handler: Interrupt Handled\n");
 	return (irq_handler_t) IRQ_HANDLED;
 }
@@ -108,34 +107,17 @@ static void clean_hardware_access_and_interrupt(void){
 
 static int gamepad_open(struct inode *i, struct file *f)
 {
-	rcu_read_lock();
 	printk("Gamepad open\n");
-	//if(pid_type != 0){
-	//	printk(";Device is Busy %d\n", pid_type);
-	//	rcu_read_unlock();
-	//	return -EBUSY;
-	//}
-
 	pid_type = pid_task(find_vpid(current->pid), PIDTYPE_PID); 
 	if(pid_type == NULL){
 		printk("Gamepad: no such pid\n");
-		rcu_read_unlock();
 		return -1;
 	}
-	rcu_read_unlock();
-	if(setup_hardware_access_and_interrupt() != 0){
-		printk("Gamepad: hardware access failed\n");
-		return -1;		
-	}
-	
 
 	return 0;
 }
 static int gamepad_release(struct inode *i, struct file *f)
 {
-	
-	printk("Gamepad release\n");	
-	clean_hardware_access_and_interrupt();
 	kfree(pid_type);
 	pid_type = 0;
 	printk("Gamepad released\n");
@@ -144,52 +126,13 @@ static int gamepad_release(struct inode *i, struct file *f)
 
 static ssize_t my_read(struct file *f, char __user *buf, size_t len, loff_t *off)
 {
-  printk(KERN_INFO "Driver: read()\n");
-  return 0;
-}
- static ssize_t my_write(struct file *f, const char __user *buf,size_t len, loff_t *off)
-{
-  printk(KERN_INFO "Driver: write()\n");
-  return len;
-}
+  printk(KERN_INFO "Driver read(): %d ! \n",gamepad_button_status);
+  if(copy_to_user(buf, &gamepad_button_status,1) != 0){
+    printk("read error \n");
+    return -EFAULT;
+  }
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35))
-static int gamepad_ioctl(struct inode *i, struct file *f, unsigned int cmd, unsigned long arg)
-#else
-static long gamepad_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
-#endif
-{
-	query_gamepad_t gamepad_data;
-	printk("Gamepad ioctl\n;");
-
-	switch (cmd)
-	{
-		break;
-		case READ_GAMEPAD:
-		{
-			gamepad_data.led = gamepad_led_status;
-			gamepad_data.buttons = gamepad_button_status;
-			if(copy_to_user((query_gamepad_t*)arg, &gamepad_data, sizeof(query_gamepad_t)))
-			{
-				return -EACCES;
-			}
-		}
-
-		break;
-		case WRITE2GAMEPAD:
-		{
-			printk(KERN_INFO "Gamepad ioctl write\n;");
-			if(copy_from_user(&gamepad_data, (query_gamepad_t*)arg,sizeof(query_gamepad_t))){
-				return -EACCES;
-			}
-			printk(KERN_INFO "Gamepad ioctl write, success\n;");
-			gamepad_led_status = gamepad_data.led;
-			gamepad_button_status = gamepad_data.buttons;
-		}
-		break;
-	}
-	printk(KERN_INFO "Exit ioctl\n;");
-	return 0;
+  return 1;
 }
 
 
@@ -198,13 +141,7 @@ static struct file_operations gamepad_fileOps =
 	.owner = THIS_MODULE,
 	.open = gamepad_open,
 	.release = gamepad_release,
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35))
-    .ioctl = gamepad_ioctl,
-	#else
-    .unlocked_ioctl = gamepad_ioctl,
-	#endif
-	 .read = my_read,
-	 .write = my_write
+	.read = my_read
 };
 
 static int __init gamepad_init(void)
@@ -241,6 +178,11 @@ static int __init gamepad_init(void)
 		return -1;
 	}
 	
+	if(setup_hardware_access_and_interrupt() != 0){
+		printk("Gamepad: hardware access failed\n");
+		return -1;		
+	}
+	
 	printk("Device creation finnished\n");
 	//Init GPIO 
 	
@@ -270,8 +212,6 @@ static int __init gamepad_init(void)
 
 static void __exit gamepad_cleanup(void)
 {
-	//if(current_pid != 0)	//Cannot unload when there is a process using the module
-	//	return -EBUSY;
 	printk("removing gamepad module\n");
 	kfree(pid_type);
 	//Stop interrupts
