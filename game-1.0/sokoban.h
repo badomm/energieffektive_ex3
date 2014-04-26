@@ -6,6 +6,11 @@
 #include "playgrid.h"
 #include "screen.h"
 
-void game_tests();
+
+
+PlayGrid* init_sokoban();
+void grid2screen(PlayGrid *grid);
+void sokoban_update(playgrid_direction direction,PlayGrid* grid);
+void delete_sokoban(PlayGrid* grid);
 
 #endif

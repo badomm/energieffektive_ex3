@@ -1,16 +1,24 @@
+#define RED    0xF800
+#define GREEN  0x07E0
+#define BLUE   0x001F
+#define YELLOW 0xFFE0
+#define BLACK  0x0000
+#define WHITE  0xFFFF
+#define CYAN   0x07FF
+#define PINK   0xf81f
+
+
 #include "sokoban.h"
+#include "screen.h"
+#include "playgrid.h"
 
-#define cPLAYER '@'
-#define cWALL   '#'
-#define cEMPTY  ' '
-#define cTARGET '.'
-#define cPLAYTA '+'
-#define cBOX    '$'
-#define cBOXTA  '*' 
 
-void game_tests() {
-	printf("lololololol\n");
-	int c, nl;
+static int x_tile_width;
+static int y_tile_width;
+short get_square_graphics(playgrid_object object, playgrid_square square);
+
+PlayGrid* init_sokoban(){
+
 	int x, y, player_x, player_y, n_rocks;
 
 	x = 10;
@@ -20,6 +28,10 @@ void game_tests() {
 	player_y = 2;
 
 	n_rocks = 4;
+	
+
+	///////
+	//Init playing field:
 
 	playgrid_object** object_grid;
 	object_grid = malloc(10 * sizeof(playgrid_object *));
@@ -43,10 +55,12 @@ void game_tests() {
 		}
 	}
 
+
 	object_grid[3][4] = ROCK;
-	object_grid[4][6] = ROCK;
+	object_grid[4][5] = ROCK;
 	object_grid[5][6] = ROCK;
-	object_grid[6][6] = ROCK;
+	object_grid[3][2] = ROCK;
+	object_grid[player_x][player_y] = PLAYER;
 
 
 	square_grid[2][5] = WALL;
@@ -56,87 +70,156 @@ void game_tests() {
 	square_grid[5][5] = GOAL;
 	square_grid[4][4] = GOAL;
 	square_grid[3][3] = GOAL;
-
-	printf("Loooooooool 3 4: %d,\t 6 6: %d,\t 2 2: %d\t WALL: 2?: %d\n", object_grid[3][4], object_grid[6][6], object_grid[2][2], square_grid[2][5]);
-
-	for (i = 0; i < y; i++) {
-		for (j = 0; j < x; j++) {
-			if (j == player_x && i == player_y) {
-				if (square_grid[j][i] == GOAL)
-					printf("%c", cPLAYTA);
-				else
-					printf("%c", cPLAYER);
-				continue;
-			}
-			if (square_grid[j][i] == WALL)
-				printf("%c", cWALL);
-			if (square_grid[j][i] == NORMAL)
-				printf("%c", cEMPTY);
-			if (square_grid[j][i] == GOAL) {
-				if (object_grid[j][i] == EMPTY)
-					printf("%c", cTARGET);
-				else
-					printf("%c", cBOX);
-			}
-		}
-		printf("\n");
-	}
 	
+	//End Init Playing field
+	///////////////
 
-	PlayGrid grid = {x, y, player_x, player_y, n_rocks, object_grid, square_grid};
+	PlayGrid *grid = malloc(sizeof(PlayGrid));
+	grid->x = x;
+	grid->y = y; 
+	grid->player_x = player_x;
+	grid->player_y = player_y; 
+	grid->n_rocks = n_rocks;
+	grid->object_grid = object_grid;
+	grid->square_grid = square_grid;
 
-	init_screen();
-	write_first_grid(grid);
+	y_tile_width = SCREEN_Y / grid->y; // TODO x og y er stygt
+	x_tile_width = SCREEN_X / grid->x; // TODO samme
 
-/*
-	PlayGrid grid = {
-		10, // x
-		10, // y
-		7,  // player_x
-		2,  // player_y
-		4,  // n_rocks
-		{   // object_grid
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  ROCK ,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  ROCK ,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  ROCK ,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  ROCK ,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-			{EMPTY, EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY,  EMPTY},
-		},
-		{   // square_grid
-			{WALL,  WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL},
-			{WALL,  NORMAL, NORMAL, NORMAL, WALL  , NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, NORMAL, NORMAL, WALL  , NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  GOAL  , NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, GOAL  , NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, NORMAL, GOAL  , NORMAL, GOAL  , NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, NORMAL, WALL},
-			{WALL,  WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL,   WALL},
+	return grid;
+}
+
+void delete_sokoban(PlayGrid* grid){
+	int i;
+	for(i=0;i<grid->x;i++){
+		free(grid->object_grid[i]);
+		free(grid->square_grid[i]);
+	}
+	free(grid->object_grid);
+	free(grid->square_grid);
+	free(grid);
+}
+
+short sokoban_color(PlayGrid *grid, int pixel_i, int pixel_j) {
+	int x = pixel_i / x_tile_width;
+	int y = pixel_j / y_tile_width;
+
+	if ((y == grid->player_x) && (x == grid->player_y)) {
+		if (grid->square_grid[y][x] == NORMAL)
+			return BLUE;
+		else if (grid->square_grid[y][x] == GOAL)
+			return BLACK;
+	}
+	if (grid->square_grid[y][x] == WALL)
+		return RED;
+	if (grid->square_grid[y][x] == GOAL) {
+		if (grid->object_grid[y][x] == EMPTY)
+			return YELLOW;
+		else if (grid->object_grid[y][x] == ROCK)
+			return GREEN;
+	}
+	if (grid->square_grid[y][x] == NORMAL) {
+		if (grid->object_grid[y][x] == EMPTY)
+			return PINK;
+		else if (grid->object_grid[y][x] == ROCK)
+			return CYAN;
+	}
+	return WHITE;
+}
+
+void grid2screen(PlayGrid *grid) {
+	playgrid_object object; 
+	playgrid_object square;
+	int x,y;
+	//loop through squares
+	for(x = 0;x < grid->x; x++){
+		for(y = 0; y < grid->y; y++){
+			//sokoban_draw_square(grid,x,y)
+			object = grid->object_grid[x][y];
+			square = grid->square_grid[x][y];
+			int origo_i = x*x_tile_width;
+			int origo_j = y*y_tile_width;
+			short color = get_square_graphics(object, square);
+
+			//loop through pixels of square
+			int i,j;	
+			for(i = 0; i < x_tile_width; i++){
+				for(j = 0; j < y_tile_width; j++){
+					write2pixel(origo_i+i, origo_j+j, color);	
+				}
+			}
 		}
 	}
-*/
-	printf("Enter move sequence:\n");
-	while ((c = getchar()) != EOF) {
-		if (c == '\n') {
-			nl++;
-			printf("Enter move sequence:\n");
-		}
-		if (c == 'u')
-			printf("Elevator going up\n");
-		if (c == 'd')
-			printf("You're going down\n");
-		if (c == 'l')
-			printf("Lefty\n");
-		if (c == 'r')
-			printf("Right\n");
-		if (c == 'n')
-			printf("New game\n");
+	update_screen_area(0, 0, 320, 240);
+}
+
+short get_square_graphics(playgrid_object object, playgrid_square square){
+	switch(square){
+		case NORMAL:
+			switch(object){
+				case EMPTY: return PINK; break;
+				case PLAYER: return BLUE; break;
+				case ROCK: return CYAN; break;
+			}
+		break;
+
+		case GOAL:
+			switch(object){
+				case EMPTY: return YELLOW; break;
+				case PLAYER: return BLACK; break;
+				case ROCK: return GREEN; break;
+			}
+		break;
+
+		case WALL:
+			switch(object){
+				case EMPTY: return RED; break;
+				case PLAYER: return WHITE; break;
+				case ROCK: return WHITE; break;
+			}
+		break;
 	}
-	printf("%d\n", nl);
+	return WHITE;
+}
+
+void sokoban_draw_square(PlayGrid* grid, int x, int y){
+	playgrid_object object = grid->object_grid[x][y];
+	playgrid_object square = grid->square_grid[x][y];
+	
+	//calculate square origo position
+	int origo_i = x*x_tile_width;
+	int origo_j = y*y_tile_width+1;
+	
+	//write the pixels
+	short color = get_square_graphics(object,square);
+	int i,j;	
+	for(i = 0; i <= x_tile_width; i++){
+		for(j = 0; j <= y_tile_width; j++){
+			
+			write2pixel(origo_i+i, origo_j+j, color);	
+		}
+	}
+	//Update the screen
+	update_screen_area(origo_i, origo_j, x_tile_width, y_tile_width);
+}
+
+
+
+void sokoban_update(playgrid_direction direction,PlayGrid* grid){
+	//init list of updated squares	
+	Square_list updated;
+	updated.n = 0;
+	
+	//move player in grid
+	if(move_object(grid->player_x, grid->player_y, direction, grid, &updated) == LEGAL)
+		printf("LEGAL\n");
+	else
+		printf("ILLEGAL\n");
+	//update screen
+	int i;
+	printf("Updated: %d\n",updated.n);
+	for(i = 0; i < updated.n; i++){
+		sokoban_draw_square(grid, updated.x[i],updated.y[i]);
+	}
+
 }
