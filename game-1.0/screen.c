@@ -14,30 +14,11 @@ typedef short (*color_function)(int, int);
 
 struct fb_copyarea update_screen_area(int dx, int dy, int width, int height);
 struct fb_copyarea write_entire_screen(short* map, color_function f);
-short checkered_board(int i, int j);
-short red_screen(int i, int j);
-short green_screen(int i, int j);
-short blue_screen(int i, int j);
-short yellow_screen(int i, int j);
-short black_screen(int i, int j);
-short white_screen(int i, int j);
+
 
 struct fb_copyarea write_first_grid(short* map, PlayGrid grid);
 
-void screen_tests() {    
-    printf("screenwriting\n");
 
-    char *screen = SCREEN;
-    int fbfd     = open(screen,O_RDWR);
-
-    short* map   = mmap(0, SCREENSIZE, PROT_WRITE, MAP_SHARED, fbfd, 0);
-    
-    color_function f = &green_screen;
-    struct fb_copyarea rect = write_entire_screen(map, f);
-    ioctl(fbfd, 0x4680, &rect);
-
-	printf("screenwrote\n");
-}
 
 void print_grid(PlayGrid grid) {
 	printf("I cant do that!\n");
@@ -120,39 +101,4 @@ struct fb_copyarea write_entire_screen(short* map, color_function f) {
     return update_screen_area(0, 0, 320, 240);
 }
 
-short checkered_board(int i, int j) {
-    int r, c;
-    short color;
-    
-    r = i / 32;
-    c = j / 16;
-    color = (r%2) == (c%2) ? BLUE : GREEN;
-            
-    if (i/32 == 0 || j/16 == 0 || i/32 == 7 || j/16 == 19)
-        color = RED;
-    return color;
-}
 
-short red_screen(int i, int j) {
-    return RED;
-}
-
-short green_screen(int i, int j) {
-    return GREEN;
-}
-
-short blue_screen(int i, int j) {
-    return BLUE;
-}
-
-short yellow_screen(int i, int j) {
-	return YELLOW;
-}
-
-short black_screen(int i, int j) {
-	return BLACK;
-}
-
-short white_screen(int i, int j) {
-	return WHITE;
-}

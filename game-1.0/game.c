@@ -29,7 +29,6 @@ int test_gamepad(void){
 	int fd = 0;
 	printf("starting game!!!!!!\n");
 
-	screen_tests();
 
 	fflush(stdout);
 	fd = open(filename,O_RDWR);
