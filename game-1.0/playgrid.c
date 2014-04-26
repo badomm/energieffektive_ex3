@@ -13,7 +13,7 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 
 	playgrid_object current_object;
         playgrid_square current_square;
-	playgrid_object new_object;
+	
 	playgrid_square new_square;
 
 	//based on moving direction, calculate new positions
@@ -45,7 +45,7 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 	//get objects and squares for new and current position
 	current_object = get_Playgrid_object(x,y,grid);
         current_square = get_Playgrid_square(x,y,grid);
-        new_object = get_Playgrid_object(x_new,y_new,grid);
+        
         new_square = get_Playgrid_square(x_new,y_new,grid);
 
 	//if new_square is a wall, not legal move
@@ -60,6 +60,16 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 }
 
 playgrid_legal move_rock(int x,int y, int x_new, int y_new, PlayGrid* grid){
+	playgrid_object new_object;
+	
+	//is there already a rock at the new square?
+	new_object = get_Playgrid_object(x_new,y_new,grid);
+	switch(new_object){
+		case 
+	}
+	
 	return LEGAL;
 }
-playgrid_legal move_player(playgrid_direction direction);
+playgrid_legal move_player(playgrid_direction direction, int x_new, int y_new, PlayGrid* grid){
+	
+}
