@@ -85,7 +85,8 @@ void game_tests() {
 
 	PlayGrid grid = {x, y, player_x, player_y, n_rocks, object_grid, square_grid};
 
-	print_grid(grid);
+	init_screen();
+	write_first_grid(grid);
 
 /*
 	PlayGrid grid = {

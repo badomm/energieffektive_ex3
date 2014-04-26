@@ -10,6 +10,8 @@
 
 #include "playgrid.h"
 #define SCREENSIZE (320*240)
+void init_screen();
+void clean_screen();
 
 void screen_tests();
 void print_playgrid(PlayGrid grid);

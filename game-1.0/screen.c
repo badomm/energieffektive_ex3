@@ -1,4 +1,5 @@
 #include "screen.h"
+#include <stdlib.h>
 
 #define SCREEN "/dev/fb0"
 #define RED    0xF800
@@ -10,28 +11,29 @@
 #define CYAN   0x07FF
 #define PINK   0xf81f
 
+static short* memory_map_screen;
+static int screen_file_ID;
+
 typedef short (*color_function)(int, int);
 
-struct fb_copyarea update_screen_area(int dx, int dy, int width, int height);
-struct fb_copyarea write_entire_screen(short* map, color_function f);
+void update_screen_area(int dx, int dy, int width, int height);
+void write_entire_screen(short* map, color_function f);
 
 
-struct fb_copyarea write_first_grid(short* map, PlayGrid grid);
+void write_first_grid(PlayGrid grid);
 
-
-
-void print_grid(PlayGrid grid) {
-	printf("I cant do that!\n");
-	printf("%c\n", grid.object_grid[0][0]);
-
-	char *screen = SCREEN;
-	int fbfd = open(screen, O_RDWR);
-
-	short* map = mmap(0, SCREENSIZE, PROT_WRITE, MAP_SHARED, fbfd, 0);
-
-	struct fb_copyarea rect = write_first_grid(map, grid);
-	ioctl(fbfd, 0x4680, &rect);
+void init_screen(){
+	screen_file_ID = open(SCREEN, O_RDWR);
+	memory_map_screen = mmap(0, SCREENSIZE, PROT_WRITE, MAP_SHARED, screen_file_ID, 0);
+	printf("Screen initialized\n");
 }
+
+void clean_screen(){
+	munmap(memory_map_screen, SCREENSIZE);
+	close(screen_file_ID);
+	printf("Clean screen\n");
+}
+
 
 short sokoban_color(PlayGrid grid, int pixel_i, int pixel_j) {
 	int x_tile_width = 240 / grid.y; // TODO x og y er stygt
@@ -63,20 +65,20 @@ short sokoban_color(PlayGrid grid, int pixel_i, int pixel_j) {
 	return WHITE;
 }
 
-struct fb_copyarea write_first_grid(short* map, PlayGrid grid) {
+void write_first_grid(PlayGrid grid) {
 	int i, j;
 	short color;
 
 	for (i = 0; i < 240; i++) {
 		for (j = 0; j < 320; j++) {
 			color = sokoban_color(grid, i, j);
-			*(map + i*320 + j) = color;
+			*(memory_map_screen + i*320 + j) = color;
 		}
 	}
-	return update_screen_area(0, 0, 320, 240);
+	update_screen_area(0, 0, 320, 240);
 }
 
-struct fb_copyarea update_screen_area(int i_dx, int i_dy, int i_width, int i_height) {
+void update_screen_area(int i_dx, int i_dy, int i_width, int i_height) {
     struct fb_copyarea rect;
 
     rect.dx = i_dx;
@@ -85,10 +87,10 @@ struct fb_copyarea update_screen_area(int i_dx, int i_dy, int i_width, int i_hei
     rect.width  = i_width;
     rect.height = i_height;
     
-    return rect; // TODO: User ioctl directly here, instead of returning.
+    ioctl(screen_file_ID, 0x4680, &rect);
 }
 
-struct fb_copyarea write_entire_screen(short* map, color_function f) {
+void write_entire_screen(short* map, color_function f) {
     int i, j;
     short color;
 
@@ -98,7 +100,7 @@ struct fb_copyarea write_entire_screen(short* map, color_function f) {
             *(map+i*320+j) = color;
         }
     }
-    return update_screen_area(0, 0, 320, 240);
+    update_screen_area(0, 0, 320, 240);
 }
 
 

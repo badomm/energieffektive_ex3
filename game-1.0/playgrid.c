@@ -1,5 +1,6 @@
 #include "playgrid.h"
 #include <stdio.h>
+#include <stdlib.h>
 playgrid_legal move_rock(int x,int y, int x_new, int y_new, PlayGrid* grid);
 playgrid_legal move_player(playgrid_direction direction, int x_new, int y_new, PlayGrid* grid);
 
@@ -10,7 +11,7 @@ playgrid_object get_Playgrid_object(int x, int y, PlayGrid* grid){
 	return grid->object_grid[x][y];
 }
 
-playgrid_legal move_object(int x, int y, int* x_out, int* y_out, playgrid_direction direction, PlayGrid* grid){	
+playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid* grid){	
 	int x_new = x;
 	int y_new = y;
 
@@ -39,9 +40,7 @@ playgrid_legal move_object(int x, int y, int* x_out, int* y_out, playgrid_direct
 		}
 	}
 	
-	//update the output
-	*x_out = x_new;
-	*y_out = y_new;	
+
 	
 	//check if new values are within legal range (within grid)
 	if(y_new < 0 || y_new >= grid->y ||
