@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include "query_ioctl.h"
 #include "screen.h"
 #include "sokoban.h"
 
