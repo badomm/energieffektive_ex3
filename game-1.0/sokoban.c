@@ -43,19 +43,16 @@ void sokoban_update(playgrid_direction direction,PlayGrid* grid){
 	updated.n = 0;
 	
 	//move player in grid
-	if(move_object(grid->player_x, grid->player_y, direction, grid, &updated) == LEGAL)
-		printf("LEGAL\n");
-	else
-		printf("ILLEGAL\n");
+	(void)move_object(grid->player_x, grid->player_y, direction, grid, &updated);
+
 	//update screen
 	int i;
-	printf("Updated: %d\n",updated.n);
+
 	for(i = 0; i < updated.n; i++){
 		sokoban_draw_square(grid, updated.x[i],updated.y[i]);
 	}
 	
     if (is_winning(grid)) {
-        printf("YOU WON!\n");
         grid2screen(grid);
         return;
     }

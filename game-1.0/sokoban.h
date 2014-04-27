@@ -24,4 +24,3 @@ void sokoban_level_down();
 void sokoban_level_up();
 
 #endif
-
