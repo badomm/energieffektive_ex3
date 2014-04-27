@@ -54,14 +54,12 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 		break;
 	}
 	
-	printf("move_object: move legal\n");
-	
 	//check if new values are within legal range (within grid)
 	if(y_new < 0 || y_new >= grid->y ||
 	   x_new < 0 || x_new >= grid->x){
 		return ILLEGAL;
 	}
-	printf("move_object: move is inside field\n");
+
 	//get objects and squares for new and current position
 	current_object = get_Playgrid_object(x,y,grid);
         
@@ -73,29 +71,22 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 		case GOAL:case NORMAL:
 		default: break;
 	}
-	printf("move_object: move does not walk into wall\n");
-	
+
 	//move depends on object being moved
 	switch(current_object){
 		case EMPTY:	//cannot move something empty
-			printf("move_object: moving EMPTY\n");
 			return ILLEGAL;		
 		break;	
 		case PLAYER:
-			printf("move_object: moving PLAYER\n");
 			return move_player(direction, x_new, y_new, grid,updated);
 		break;	
 		case ROCK:
-			printf("move_object: moving ROCK\n");
 			return move_rock(x,y,x_new,y_new,grid,updated);		
 		break;
-		
 		default:
-			printf("moving object, DEFAULT CASE\n");
 			return ILLEGAL;		
 		break;
 	}
-	printf("Not moving anything???\n");
 	return LEGAL;
 }
 
@@ -132,7 +123,7 @@ playgrid_legal move_player(playgrid_direction direction, int x_new, int y_new, P
 	//is the new square legal to move to	
 	switch(new_object){
 		case ROCK://try to move the rock
-			if( ILLEGAL == move_object(x_new, y_new, direction, grid, updated) ){
+			if(ILLEGAL == move_object(x_new, y_new, direction, grid, updated) ){
 				return ILLEGAL;			
 			}
 		break;

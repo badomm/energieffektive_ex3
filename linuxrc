@@ -12,4 +12,3 @@ modprobe driver-gamepad
 game
 
 #exec /bin/sh
-
