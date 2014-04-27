@@ -2,13 +2,11 @@
 #define QUERY_IOCTL_H
 #include <linux/ioctl.h>
 
-
-
 typedef struct
 {
 	int led;
 	int buttons;
-}query_gamepad_t;
+} query_gamepad_t;
 
 #define IOCTL_APP_TYPE 77
 
@@ -17,3 +15,4 @@ typedef struct
 #define READ_GAMEPAD _IOR(IOCTL_APP_TYPE,3,query_gamepad_t)
 
 #endif
+

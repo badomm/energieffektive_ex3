@@ -14,13 +14,10 @@ void update_screen_area(int dx, int dy, int width, int height);
 void init_screen(){
 	screen_file_ID = open(SCREEN, O_RDWR);
 	memory_map_screen = mmap(0, SCREENSIZE, PROT_WRITE, MAP_SHARED, screen_file_ID, 0);
-	printf("Screen initialized\n");
 }
 
 void clean_screen(){
 	munmap(memory_map_screen, SCREENSIZE);
-	//close(screen_file_ID);
-	printf("Clean screen\n");
 }
 
 void write2pixel(int x, int y, short color){
@@ -39,7 +36,6 @@ void update_screen_area(int i_dx, int i_dy, int i_width, int i_height) {
     ioctl(screen_file_ID, 0x4680, &rect);
 }
 
-
 void fill_screen(short color){
 	int x,y;	
 	for(x = 0; x < SCREEN_X; x++){
@@ -49,7 +45,4 @@ void fill_screen(short color){
 	}
 	update_screen_area(0,0,SCREEN_X,SCREEN_Y);
 }
-
-
-
 

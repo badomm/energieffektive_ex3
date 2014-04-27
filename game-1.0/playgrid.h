@@ -33,4 +33,5 @@ playgrid_legal move_object(int x, int y, playgrid_direction direction, PlayGrid*
 
 int n_rocks_in_goal(PlayGrid* grid);
 
-#endif 
+#endif
+

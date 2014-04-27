@@ -22,6 +22,5 @@ void update_screen_area(int i_dx, int i_dy, int i_width, int i_height);
 
 void fill_screen(short color);
 
-
 #endif
 
