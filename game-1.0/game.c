@@ -23,7 +23,7 @@ void reset();
 
 int main(void) {
 	grid = init_sokoban();
-	
+
 	if(!init_gamepad())
 	    exit(-1);
 
@@ -89,7 +89,7 @@ int do_button_action(){
 		    sokoban_level_up();
 		    reset();
 		break;
-		case 127:
+		case 127: // sw8 End
 		    end = 0;
 		break;
 		default:

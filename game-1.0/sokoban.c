@@ -43,7 +43,7 @@ void sokoban_update(playgrid_direction direction,PlayGrid* grid){
 	updated.n = 0;
 	
 	//move player in grid
-	(void)move_object(grid->player_x, grid->player_y, direction, grid, &updated) == LEGAL)
+	(void)move_object(grid->player_x, grid->player_y, direction, grid, &updated);
 
 	//update screen
 	int i;
